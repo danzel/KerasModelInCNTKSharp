@@ -7,14 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CNTKMnist", "CNTKMnist\CNTK
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EB17BBC5-3756-45EF-8F73-745E51DC0A12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB17BBC5-3756-45EF-8F73-745E51DC0A12}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB17BBC5-3756-45EF-8F73-745E51DC0A12}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB17BBC5-3756-45EF-8F73-745E51DC0A12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB17BBC5-3756-45EF-8F73-745E51DC0A12}.Debug|x64.ActiveCfg = Debug|x64
+		{EB17BBC5-3756-45EF-8F73-745E51DC0A12}.Debug|x64.Build.0 = Debug|x64
+		{EB17BBC5-3756-45EF-8F73-745E51DC0A12}.Release|x64.ActiveCfg = Release|x64
+		{EB17BBC5-3756-45EF-8F73-745E51DC0A12}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
