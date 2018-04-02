@@ -28,17 +28,24 @@ namespace CNTKMnist
 			// https://github.com/keras-team/keras/blob/master/keras/losses.py#L68
 			// https://github.com/keras-team/keras/blob/master/keras/backend/cntk_backend.py#L1745
 			var trainingLoss = CNTKLib.CrossEntropyWithSoftmax(modelFunc, labelsVar, "lossFunction");
-			
+
 			//Keras calls this metrics='accuracy', not sure if correct
 			//CNTKLib.ReduceSum()
 			var prediction = CNTKLib.ClassificationError(modelFunc, labelsVar, "predictionError");
 
-			var trainer = Trainer.CreateTrainer(modelFunc, trainingLoss, prediction, new List<Learner>
+			//MSE maybe
+			// https://github.com/Microsoft/CNTK/blob/16d01d7a3256c8bb689ab4ddc1b66ae842c186a9/Tutorials/CNTK_203_Reinforcement_Learning_Basics.ipynb
+			// In [9]
+			// loss = C.reduce_mean(C.square(model - q_target), axis=0)
+			var mseLoss = CNTKLib.ReduceMean(CNTKLib.Square(CNTKLib.Minus(modelFunc, labelsVar).Output).Output, new Axis(0));
+			var mseLoss2 = CNTKLib.ReduceMean(CNTKLib.Square(CNTKLib.Minus(modelFunc, labelsVar).Output).Output, new Axis(0));
+
+			var trainer = Trainer.CreateTrainer(modelFunc, mseLoss, mseLoss2, new List<Learner>
 			{
-				Learner.SGDLearner(modelFunc.Parameters(), new TrainingParameterScheduleDouble(0.01, (uint)batch_size))
+				//Learner.SGDLearner(modelFunc.Parameters(), new TrainingParameterScheduleDouble(0.01, (uint)batch_size))
 
 				//TODO: Is this the right way to make a ParameterVector?
-				//CNTKLib.AdaDeltaLearner(new ParameterVector(new List<Parameter>(modelFunc.Parameters())), new TrainingParameterScheduleDouble(1))
+				CNTKLib.AdaDeltaLearner(new ParameterVector(new List<Parameter>(modelFunc.Parameters())), new TrainingParameterScheduleDouble(1))
 			});
 
 
@@ -92,7 +99,7 @@ namespace CNTKMnist
 					for (var b = 0; b < x_test.Length; b++)
 					{
 						var ourData = outputData[b];
-
+						/*
 						int bestIndex = 0;
 						float bestScore = ourData[0];
 						for (var i = 1; i < 10; i++)
@@ -102,8 +109,9 @@ namespace CNTKMnist
 								bestIndex = i;
 								bestScore = ourData[i];
 							}
-						}
-
+						}*/
+						//Console.WriteLine(ourData[0]);
+						int bestIndex = (int)(ourData[0] * 10 + 0.5f); //Rounding to closest
 						if (bestIndex == y_test[b])
 							correct++;
 					}
@@ -149,12 +157,12 @@ namespace CNTKMnist
 								trainingData[v++] = x_train[i + (batch_size * batch)][x][y] / 255f;
 
 							//1 hot encoding of the label
-							labelData[i * 10 + y_train[i + (batch_size * batch)]] = 1;
+							labelData[i] = (y_train[i + (batch_size * batch)]) / 10f;
+							//labelData[i * 10 + y_train[i + (batch_size * batch)]] = 1;
 						}
 
-
 						var inputBatch = Value.CreateBatch(input.Shape, trainingData, 0, batch_size * 28 * 28, device);
-						var labelBatch = Value.CreateBatch(modelFunc.Output.Shape, labelData, 0, batch_size * 10, device);
+						var labelBatch = Value.CreateBatch(modelFunc.Output.Shape, labelData, 0, batch_size * 1, device);
 
 						var arguments = new Dictionary<Variable, Value>
 						{
